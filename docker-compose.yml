@@ -1,0 +1,22 @@
+version: '3.6'
+
+services:
+  # nginx
+  nginx:
+    image: 'nginx:1.14'
+    container_name: 'nginx'
+    ports:
+      - '80:80'
+    links:
+      - 'php'
+    volumes:
+      - './web:/usr/share/nginx/html'
+      - './docker/nginx/conf:/etc/nginx/conf.d'
+
+  # php
+  php:
+    build: './docker/php'
+    image: 'php:twitter-api'
+    container_name: 'php'
+    volumes:
+      - './web:/usr/share/nginx/html'
