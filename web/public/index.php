@@ -10,21 +10,13 @@ $tweets      = $connection->get('statuses/home_timeline', $home_params);
 
 foreach ($tweets as $tweet)
 {
-	$image = $tweet->user->profile_image_url;
-	echo "<img src={$image}>";
+	$isAlone = is_null($tweet->in_reply_to_user_id_str);
 
-	$text = $tweet->text;
-	echo "<div>{$text}</div>";
-
-	$isAlone = ($tweet->in_reply_to_user_id_str === NULL) ? TRUE : FALSE;
-
-	$tweet_id = $tweet->id_str;
-
-	// メンションが無い場合のみファボする。
-	if ($isAlone)
+	// リプライではない かつ　リツイートでない場合
+	if ($isAlone && ! isset($tweet->retweeted_status))
 	{
-		$params = ["id" => $tweet_id];
-		// $favorite = $connection->post("favorites/create.json", $params);
-		echo "<p>ひとりごと</p>";
+		$params   = ["id" => $tweet->id_str];
+		$favorite = $connection->post("favorites/create.json", $params);
+		echo "<p style='color: red'>ひとりごと</p>";
 	}
 }
